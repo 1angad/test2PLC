@@ -1,0 +1,261 @@
+Completed Denotational Semantics:
+
+Meaning of STMT
+MeaningOf[STMT(<STMT>, s)] -->
+	if <stmt> == IF_STMT
+		return MeaningOf[IF_STMT(if ( <bool_expr> ) <stmt>, s)]
+	else if <stmt> == BLOCK
+		return MeaningOf|BLOCK[{ MeaningOf|STMT(<stmt>, s) ; }]
+	else if <stmt> == ASSIGN
+		return MeaningOf|ASSIGN
+	else if <stmt> == DECLARE
+		return MeaningOf|DECLARE
+	else if <stmt> == WHILE_LOOP
+		return MeaningOf[WHILE_LOOP( ( <bool_expr> ) ) <stmt>, s)]
+	else 
+		return error
+
+Meaning of WHILE_LOOP:
+MeaningOf[WHILE_LOOP(while ( <bool_expr> ) <stmt>, s)] -->
+    if(MeaningOf[BOOL_EXPR(<bool_expr>, s == error)])
+        return error
+    else if (MeaningOf|BOOL_EXPR(<bool_expr>, s) == true {
+        if(MeaningOf|STMT(<stmt>, s) == error) 
+            return error("Semantic error in the then STMT of our while loop")
+        return MeaningOf|STMT(<stmt>, s)
+    } else if(MeaningOf|BOOL_EXPR(<bool_expr>, s) == false) 
+        return s
+    }
+
+Meanings of if and if/else:
+MeaningOf[IF_STMT(if ( <bool_expr> ) <stmt>, s)] -->
+    if(MeaningOf|BOOL_EXPR(<bool_expr>, s == error)
+        return error
+    else if (MeaningOf|BOOL_EXPR(<bool_expr>, s) == true {
+        if(MeaningOf|STMT(<stmt1>, s) == error) 
+            return error("Semantic error in the then STMT of our if block")
+        return MeaningOf|STMT(<stmt1>, s)
+    } else if(MeaningOf|BOOL_EXPR(<bool_expr>, s) == false) 
+        return s
+    }
+
+MeaningOf[IF_STMT(if ( <bool_expr> ) <stmt> else <stmt2>, s)] -->
+    if(MeaningOf|BOOL_EXPR(<bool_expr>, s == error)
+        return error
+    else if (MeaningOf|BOOL_EXPR(<bool_expr>, s) == true {
+        if(MeaningOf|STMT(<stmt1>, s) == error) 
+            return error("Semantic error in the then STMT of our if block")
+        return MeaningOf|STMT(<stmt1>, s)
+    } else if(MeaningOf|BOOL_EXPR(<bool_expr>, s) == false) 
+        if( MeaningOf|STMT(<stmt2>, s) == error)
+            return error("Semantic error ni the 'else' STMT of our if block")
+        return MeaningOf|STMT(<stmt2>, s)
+    }
+
+Meaning of DECLARE and multiple declarations:
+MeaningOf[DECLARE(DataType ID, s)] -->
+	if (s == null) 
+		return error(
+	else 
+		return s = MeaningOf|DECLARE(DataType ID, s)
+MeaningOf[DECLARE(DataType ID ‘,’ ID, s )]
+	if (s == null) 
+		return error
+	else 
+		return MeaningOf[DECLARE(DataType ID ‘,’ ID, s)]
+
+Meaning of assign:
+MeaningOf[ASSIGN(<id> = <expr>)] -->
+    if(MeaningOf[ID(<id>, s)]) == error {
+        return error("Error with ID type")
+    } else {
+        if(MeaningOf|EXPR(<expr>, s) == error)
+            return error("Error with Expression")
+         else 
+            return MeaningOf[EXPR(<expr>, s)]
+    }
+
+Meaning of EXPR and add and sub EXPRs:
+MeaningOf[EXPR(<TERM>, s)] -->
+	if (MeaningOf[TERM(<FACTOR>, s) == error]
+		return error
+	else 
+		return MeaningOf[TERM(<FACTOR>, s)]
+
+MeaningOf|EXPR(<TERM1> + <TERM2>, s) -->
+	if (MeaningOf[TERM(<FACTOR1>, s)[
+		return error("Error with first factor")
+	else if MeaningOf|TERM(<FACTOR2>, s)
+		return error("Error with second factor")
+	else 
+		return MeaningOf[TERM(<FACTOR1>, S)] + MeaningOf[TERM(<FACTOR2>, s)]
+
+MeaningOf|EXPR(<TERM1> - <TERM2>, s) -->
+	if (MeaningOf[TERM(<FACTOR1>, s)[
+		return error("Error with first factor")
+	else if MeaningOf|TERM(<FACTOR2>, s)
+		return error("Error with second factor")
+	else 
+		return MeaningOf[TERM(<FACTOR1>, S)] - MeaningOf[TERM(<FACTOR2>, s)]
+
+Meaning of TERM and *, /, % TERMs:
+MeaningOf|TERM(<FACT1>, s) -->
+	if (MeaningOf|TERM(<FACT1>, s) == error
+		return error("Error with FACT1")
+	else (MeaningOf|TERM(<FACT1>, s)
+		return MeaningOf|TERM(<FACT>, s)
+
+MeaninfOf|TERM(<FACT1, s) -->
+	if(FACT<FACT1>, s) == error
+		return error
+	else 
+		return MeaningOf|TERM(<FACT>, s)
+		
+MeaningOf|TERM(<FACT1> * <FACT2>, s) -->
+	if (MeaningOf|FACT(<FACT1>, s)) == error
+		return error("Error with FACT1")
+	else {
+		if(MeaningOF|FACT<FACT2>, s) == error
+			return error("Error with FACT2")
+		else
+			return MeaningOf|FACT(<FACT1>, s) * MeaningOf|FACT(<FACT2>, s)
+	}
+
+MeaningOf|TERM(<FACT1> / <FACT2>, s) -->
+	if (MeaningOf|FACT(<FACT1>, s)) == error
+		return error("Error with FACT1")
+	else {
+		if(MeaningOF|FACT<FACT2>, s) == error
+			return error("Error with FACT2")
+		else
+			return MeaningOf|FACT(<FACT1>, s) / MeaningOf|FACT(<FACT2>, s)
+	}
+
+MeaningOf|TERM(<FACT1> % <FACT2>, s) -->
+	if (MeaningOf|FACT(<FACT1>, s)) == error
+		return error("Error with FACT1")
+	else {
+		if(MeaningOF|FACT<FACT2>, s) == error
+			return error("Error with FACT2")
+		else
+			return MeaningOf|FACT(<FACT1>, s) % MeaningOf|FACT(<FACT2>, s)
+	}
+
+Meanings for BTERM and comparison BTERMs:
+MeaningOf|BOOL_EXPR (<BTERM1>, s) -->
+	if (MeaningOf|BOOL_TERM(<BTERM1>), s) == error 
+		return error(Error with first BTERM")
+	else 
+		return MeaningOf|BOOL_TERM(<TERM1>, s)
+
+MeaningOf|BOOL_EXPR (<BTERM1> > <BTERM1>, s) -->
+	if (MeaningOf|B_TERM(<BTERM1>), s) == error)
+		return error("Error in BTERM1")
+	else {
+		if (MeaningOf|B_TERM(<BTERM2>), s) == error)
+			return error("Error in BTERM2")
+		else 
+			return (MeaningOf|B_TERM(<BTERM1>), s) > MeaningOf|BOOL_TERM(<BTERM2>, s) 
+		// THESE BOOLEAN OPERATORS DON'T NEED A CHECK ON TRUE OR FALSE STATEMENTS BECAUSE THE RETURN STATEMENT TAKES CARE OF THAT
+
+	}
+
+
+MeaningOf|BOOL_EXPR (<BTERM1> >= <BTERM1>, s) -->
+	if (MeaningOf|B_TERM(<BTERM1>), s) == error)
+		return error("Error in BTERM1")
+	else {
+		if (MeaningOf|B_TERM(<BTERM2>), s) == error)
+			return error("Error in BTERM2")
+		else 
+			return (MeaningOf|B_TERM(<BTERM1>), s) >= MeaningOf|BOOL_TERM(<BTERM2>, s)
+
+	}
+
+
+MeaningOf|BOOL_EXPR (<BTERM1> < <BTERM1>, s) -->
+	if (MeaningOf|B_TERM(<BTERM1>), s) == error)
+		return error("Error in BTERM1")
+	else {
+		if (MeaningOf|B_TERM(<BTERM2>), s) == error)
+			return error("Error in BTERM2")
+		else 
+			return (MeaningOf|B_TERM(<BTERM1>), s) < MeaningOf|BOOL_TERM(<BTERM2>, s)
+
+	}
+
+MeaningOf|BOOL_EXPR (<BTERM1> <= <BTERM1>, s) -->
+	if (MeaningOf|B_TERM(<BTERM1>), s) == error)
+		return error("Error in BTERM1")
+	else {
+		if (MeaningOf|B_TERM(<BTERM2>), s) == error)
+			return error("Error in BTERM2")
+		else 
+			return (MeaningOf|B_TERM(<BTERM1>, s) <= MeaningOf|BOOL_TERM(<BTERM2>, s)
+
+	}
+
+Meanings of BTERM and equals and not equals operator BTERMS:
+MeaningOf|BTERM (<BAND1>, s) -->
+if(MeaningOf|BOOL_AND(<BAND1>), s) == error)
+		return error
+	return MeaningOf|BOOL_AND(<BAND1>, s)
+
+MeaningOf|BTERM (<BAND1> == <BAND2>, s) -->
+	if(MeaningOf|B_AND(<BAND1>), s) == error)
+		return error("Error in BAND1")
+	else if (MeaningOf|B_AND(<BAND1>, s) == true)
+		if(MeaningOf|B_AND(<BAND2>), s) == error)
+			return error("Error in BAND2")
+		else if (MeaningOf|BOOL_OR(<BOR1>, s) == MeaningOf|BOOL_OR(<BOR2>), s))
+			return true
+		else
+			return false
+	}
+
+MeaningOf|BTERM (<BAND1> != <BAND2>, s) -->
+	if(MeaningOf|B_AND(<BAND1>), s) == error)
+		return error("Error in BAND1")
+	else if (MeaningOf|B_AND(<BAND1>, s) == true)
+		if(MeaningOf|B_AND(<BAND2>), s) == error)
+			return error("Error in BAND2")
+		else if (MeaningOf|BOOL_OR(<BOR1>, s) != MeaningOf|BOOL_OR(<BOR2>), s))
+			return true
+		else
+			return false
+	}
+
+Meanings of BOOL_AND and and operator:
+MeaningOf|BOOL_AND (<BOR1>, s) -->
+    if(MeaningOf|BOOL_OR(<BOR1>, s) == error) 
+        return error("Boolean evaluation not returned in operand")
+    return MeaningOf|BOOL_OR(<BOR1>, s)
+
+
+MeaningOf|BOOL_AND (<BOR1> && <BOR2>, s) -->
+    if(MeaningOf|BOOL_OR(<BOR1>, s) == error) 
+        return error("Boolean evaluation not returned in operand1")
+    else if( MeaningOF|BOOL_OR(<BOR1>, s) == TRUE)
+        if(MeaningOf|BOOL_OR(<BOR2>, s) == error)
+            return error("Boolean evaluation not returned in operand2")
+        return MeaningOf|BOOL_OR(<BOR1>, s)
+    else
+        return false
+
+Meanings of BOOL_OR and or operator:
+MeaningOf|BOOL_OR(<EXPR>, s) -->
+	if(MeaningOf|EXPRESSION(<EXPR1>, s) == error
+		return error("Boolean evaluation not returned in operand1")
+	return MeaningOf|EXPRESSION(<EXPR1>, s)
+
+MeaningOf|BOOL_OR(<EXPR1> || <EXPR2>, s) -->
+	if(MeaningOf|EXPRESSION(<EXPR1>, s) == error)
+		return error("Boolean evaluation not returned in operand1")
+	else if ( MeaningOF|EXPRESSION(<EXPR1>, s) == TRUE)
+		return MeaningOf|EXPRESSION(<EXPR1>, s)
+	else if ( MeaningOf|EXPRESSION(<EXPR2>, s) == error)
+		return error("Boolean evaluation not returned in operand2")
+	else if (MeaningOf|EXPRESSION(<EXPR2>, s) == true)
+		return MeaningOf|EXPRESSION(<EXPR2>, s)
+	else
+		return false

@@ -1,0 +1,7 @@
+THE FILE READS THE BOTTOM MOST LINE
+if (a || b) { i = i + 3 ; } 
+int x = 3; 
+while(a && b) { i = i % 5; } 
+while (x != 3) { x = x - 3 ; } 
+float x, y, z
+if( x == 10 ) { x = x + 3 ; } else { x = x%3; }

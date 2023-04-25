@@ -1,0 +1,57 @@
+---------------------- NOTES TO THE GRADER:
+
+If, for some reason, the saved file does not work, please copy and paste the rules pasted below into the text box and CHANGE MAX # STEPS TO 200 so it will work.
+
+Thanks.
+
+PS I have also used test cases to prove that it works, feel free to use the following (I have also added specific values; i, 3.5, and 5; to make testing easier).
+
+while ( i != 5 && i > 3.5 && i == 3.5 ) { i = i + ( i + 5 ) ; }
+if ( i == 5 ) { i = i + 3.5 ; } else { i = i - 3.5 ; }
+DataType i , i , i , i
+
+--------------------------------------------
+
+S' -> STMT
+STMT -> IF
+STMT -> BLOCK
+STMT -> ASSIGN
+STMT -> DECLARE 
+STMT -> WHILE
+STLI -> STMT ;
+IF -> if ( BOOL ) BLOCK
+IF -> if ( BOOL ) BLOCK else BLOCK
+WHILE -> while ( BOOL ) BLOCK
+DECLARE -> DataType ID
+DECLARE -> DataType ID EXTRA 
+EXTRA -> , ID REPEAT
+REPEAT -> EXTRA
+REPEAT -> ''
+ASSIGN -> ID = E
+BOOL -> BT > BT
+BOOL -> BT < BT
+BOOL -> BT <= BT
+BOOL -> BT >= BT
+BOOL -> BT
+BT -> BA == BA
+BT -> BA != BA
+BT -> BA
+BA -> BO && BO
+BA -> BO
+BO -> E || E
+BO -> E
+BLOCK -> { STLI }
+E -> T + T
+E -> T - T
+E -> T
+T -> F / F
+T -> F * F
+T -> F % F
+T -> F
+F -> ID
+F -> INT 
+F -> FLOAT
+F -> ( E )
+ID -> i
+INT -> 5
+FLOAT -> 3.5
